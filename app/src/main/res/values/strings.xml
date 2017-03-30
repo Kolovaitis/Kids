@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Kids</string>
+    <string name="play">Play</string>
+    <string name="action_help">Help</string>
+</resources>
