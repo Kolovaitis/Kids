@@ -17,4 +17,10 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("level",0);
         startActivity(intent);
     }
+    public void draw(View v){
+        Intent intent=new Intent(this,DrawActivity.class);
+        intent.putExtra("level",0);
+        startActivity(intent);
+    }
+
 }
