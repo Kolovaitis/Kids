@@ -2,16 +2,61 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <!-- Search, should appear as action button -->
-    <item android:id="@+id/action_color_choose"
-        android:icon="@drawable/color_chooser"
+    <item
+        android:id="@+id/white"
+        android:icon="@drawable/white_color"
+        android:title="white"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/red"
+        android:icon="@drawable/red_color"
+        android:title="red"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/green"
+        android:icon="@drawable/green_color"
+        android:title="green"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/blue"
+        android:icon="@drawable/blue_color"
+        android:title="blue"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/yellow"
+        android:icon="@drawable/yellow_color"
+        android:title="yellow"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/cyan"
+        android:icon="@drawable/cyan_color"
+        android:title="cyan"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/pink"
+        android:icon="@drawable/pink_color"
+        android:title="pink"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/brown"
+        android:icon="@drawable/brown_color"
+        android:title="brown"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/grey"
+        android:icon="@drawable/grey_color"
+        android:title="grey"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/removeAll"
+        android:icon="@drawable/remove_all"
         android:title="@string/action_color_choose"
-        app:showAsAction="ifRoom"
-        />
-    <item android:id="@+id/action_help"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_help"
         android:icon="@mipmap/ic_action_help"
         android:title="@string/action_help"
-        app:showAsAction="ifRoom"
-        />
+        app:showAsAction="always" />
 
 
 </menu>
