@@ -17,6 +17,8 @@ import android.view.View;
 public class TriangleView extends View {
     public int color1;
     public int color2;
+    public int leftAlpha;
+    public int rightAlpha;
     public boolean isLeftTop;
     public int height;
     public int width;
@@ -27,7 +29,7 @@ public class TriangleView extends View {
     Path path;
     Path pathLeft;
     Rect rect;
-
+    private Canvas canvas;
     public TriangleView(Context context, boolean isLeftTop, int color1, int color2, int width, int height) {
         super(context);
         this.isLeftTop = isLeftTop;
@@ -35,6 +37,8 @@ public class TriangleView extends View {
         this.color2 = color2;
         this.height = height;
         this.width = width;
+        leftAlpha=255;
+        rightAlpha=255;
         p = new Paint();
         p.setStrokeWidth(3);
 
@@ -71,29 +75,25 @@ public class TriangleView extends View {
           pathLeft.lineTo(width, height);
           pathLeft.close();
       }
-/*
-        // регион из прямоугольника обрезки
-        rect = new Rect(100, 100, 150, 150);
-        clipRegion = new Region(rect);
 
-        // итоговый регион
-        region = new Region();
-        // отсекаем от path область clipRegion
-        region.setPath(path, clipRegion);
-        // получаем path из региона
-        pathDst = region.getBoundaryPath();*/
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(Canvas canva) {
+        this.canvas=canva;
         super.onDraw(canvas);
-        canvas.drawColor(color2);
+    //    canvas.drawColor(color2);
 
 
 
             p.setStyle(Paint.Style.FILL);
+        p.setColor(color2);
+        p.setAlpha(rightAlpha);
+        canvas.drawPath(pathLeft, p);
             p.setColor(color1);
+        p.setAlpha(leftAlpha);
             canvas.drawPath(path, p);
+
             p.setColor(Color.BLACK);
             p.setStyle(Paint.Style.STROKE);
             canvas.drawPath(pathLeft, p);
@@ -107,4 +107,14 @@ public class TriangleView extends View {
         }
         this.invalidate();
     }
-}
+    public void setAlpha(int alpha,boolean isLeft){
+        if(isLeft){
+            leftAlpha=alpha;
+        }else{
+            rightAlpha=alpha;
+        }
+        invalidate();
+    }
+
+    }
+
