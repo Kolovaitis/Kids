@@ -20,11 +20,12 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class DrawActivity extends AppCompatActivity implements View.OnTouchListener {
-    int currentColor = Color.WHITE;
+    static int currentColor = Color.WHITE;
     int a;
+    int errCounter;
     MenuItem pastTouched;
 
-    Object[][] colors = {
+    static Object[][] colors = {
             {"white", Color.WHITE, R.drawable.white_color_touched},
             {"red", Color.RED, R.drawable.red_color_touched},
             {"green", Color.GREEN, R.drawable.green_color_touched},
@@ -51,7 +52,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
                             {8}, {8}, {8}, {8}, {8}, {8}
                     },
                     {
-                            {true, 2, 0}, {false, 0, 2}, {8}, {8}, {0}, {0}
+                            {0}, {0}, {8}, {8}, {0}, {0}
                     }
             }
     };
@@ -89,12 +90,12 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
             }
         }
     });
-    int level = 0;
+    static int level = 0;
     int x;
     int y;
     int width;
     int height;
-    LinearLayout humanSide;
+    static LinearLayout humanSide;
     Thread errorTriangleThread = new Thread(new Runnable() {
         @Override
         public void run() {
@@ -144,6 +145,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draw);
+        errCounter = 0;
         Intent intent = getIntent();
         level = intent.getIntExtra("level", 0);
         x = levels[level][0].length;
@@ -177,14 +179,16 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
 
                 }
                 if (levels[level][i][j].length > 1) {
-                    TriangleView view = new TriangleView(this, (boolean) levels[level][i][j][0], (Integer) colors[(int) levels[level][i][j][1]][1], (Integer) colors[(int) levels[level][i][j][2]][1], a, a);
+                    TriangleView view = new TriangleView(this, (boolean) levels[level][i][j][0], (Integer) colors[(int) levels[level][i][j][1]][1], (Integer) colors[(int) levels[level][i][j][2]][1], a, a, ishuman);
 
                     view.setPadding(a / 20, a / 20, a / 20, a / 20);
                     tr.addView(view, new ActionBar.LayoutParams(a, a));
                     if (ishuman) {
                         view.changeColor(true, (Integer) colors[0][1]);
                         view.changeColor(false, (Integer) colors[0][1]);
-                        view.setOnTouchListener(this);
+                        if ((int) levels[level][i][j][1] != 0) errCounter++;
+                        if ((int) levels[level][i][j][2] != 0) errCounter++;
+
 
                     }
                 } else {
@@ -194,6 +198,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
                     if (ishuman) {
                         view.changeColor((Integer) colors[0][1]);
                         view.setOnTouchListener(this);
+                        if((int) levels[level][i][j][0]!=0)errCounter++;
 
                     }
                 }
@@ -264,55 +269,27 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
             int i = humanSide.indexOfChild((LinearLayout) view.getParent());
             int j = ((LinearLayout) view.getParent()).indexOfChild(view);
-            if (view.getClass() == TriangleView.class) {
-                for (int k = 0; k < errorsForTriangle.size(); k++) {
-                    if (errorsForTriangle.get(k).get(0).equals(view)) {
-                        errorsForTriangle.remove(k);
 
-                        break;
-                    }
-                }
-                if (!((TriangleView) view).isLeftTop) {
-                    ((TriangleView) view).setAlpha(255, motionEvent.getX() < motionEvent.getY());
-                    ((TriangleView) view).changeColor(motionEvent.getX() < motionEvent.getY(), currentColor);
-                    if (currentColor != (int) colors[(int) levels[level][i][j][(motionEvent.getX() < motionEvent.getY()) ? 1 : 2]][1]) {
-                        //((TriangleView) view).changeColor(motionEvent.getX() < motionEvent.getY(), (int) colors[0][1]);
-                        ArrayList<Object> error = new ArrayList<>();
-                        error.add(view);
-                        error.add(255);
-                        error.add(motionEvent.getX() < motionEvent.getY());
-                        errorsForTriangle.add(error);
-                    }
-                } else {
-                    ((TriangleView) view).setAlpha(255, a - motionEvent.getX() > motionEvent.getY());
-                    ((TriangleView) view).changeColor(a - motionEvent.getX() > motionEvent.getY(), currentColor);
-                    if (currentColor != (int) colors[(int) levels[level][i][j][(motionEvent.getX() > motionEvent.getY()) ? 1 : 2]][1]) {
-                        ArrayList<Object> error = new ArrayList<>();
-                        error.add(view);
-                        error.add(255);
-                        error.add(motionEvent.getX() > motionEvent.getY());
-                        errorsForTriangle.add(error);
-                    }
-                }
-            } else {
-                for (int k = 0; k < errors.size(); k++) {
-                    if ((int) errors.get(k).get(0) == i && (int) errors.get(k).get(1) == j) {
-                        errors.remove(k);
-                        view.setAlpha(1f);
-                        break;
-                    }
-                }
-                ((RectView) view).changeColor(currentColor);
-
-                if (currentColor != (int) colors[(int) levels[level][i][j][0]][1]) {
-                    ArrayList<Object> error = new ArrayList<>();
-                    error.add(i);
-                    error.add(j);
-                    error.add(0.1f);
-                    errors.add(error);
+            for (int k = 0; k < errors.size(); k++) {
+                if ((int) errors.get(k).get(0) == i && (int) errors.get(k).get(1) == j) {
+                    errors.remove(k);
+                    view.setAlpha(1f);
+                    break;
                 }
             }
+            if(colors[(int) levels[level][i][j][0]][1]==currentColor&&((RectView)view).color!=currentColor)errCounter--;
+            ((RectView) view).changeColor(currentColor);
+
+            if (currentColor != (int) colors[(int) levels[level][i][j][0]][1]) {
+
+                ArrayList<Object> error = new ArrayList<>();
+                error.add(i);
+                error.add(j);
+                error.add(0.1f);
+                errors.add(error);
+            }
         }
+
         return false;
     }
 }
