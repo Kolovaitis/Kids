@@ -22,5 +22,13 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("level",0);
         startActivity(intent);
     }
+    public void puzzle(View v){
+        Intent intent=new Intent(this,PuzzleActivity.class);
+        startActivity(intent);
+    }
+    public void find(View v){
+        Intent intent=new Intent(this,FindSimilarActivity.class);
+        startActivity(intent);
+    }
 
 }

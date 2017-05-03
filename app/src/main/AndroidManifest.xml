@@ -23,6 +23,9 @@
             android:name=".PositionActivity"
             android:screenOrientation="landscape" />
         <activity android:name=".DrawActivity" android:screenOrientation="landscape"></activity>
+        <activity android:name=".PuzzleActivity" android:screenOrientation="landscape"></activity>
+        <activity android:name=".FindSimilarActivity" android:screenOrientation="landscape"></activity>
+
     </application>
 
 </manifest>
