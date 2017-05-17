@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 /**
  * Created by Влад on 15.04.2017.
@@ -25,12 +26,12 @@ public class FindSimilarActivity extends AppCompatActivity {
        Float a;
        a= v.getAlpha();
        if(a.toString().equals("1.0")){
-           v.setBackgroundResource(R.mipmap.error);
+           ((ImageView)v).setImageResource(R.mipmap.error);
            v.setClickable(false);
             fail++;
         }
        else{
-           v.setBackgroundResource(R.mipmap.tick);
+           ((ImageView)v).setImageResource(R.mipmap.tick);
            v.setClickable(false);
            right++;
        }
