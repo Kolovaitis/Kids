@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="by.superteam.kids.MainActivity">
+
+
+
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="201dp"
+        android:layout_height="215dp"
+        android:background="@mipmap/find3_main"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="45dp" />
+
+    <TableLayout
+        android:layout_width="299dp"
+        android:layout_height="200dp"
+        tools:layout_editor_absoluteX="249dp"
+        tools:layout_editor_absoluteY="55dp"
+        app:layout_constraintLeft_toRightOf="@+id/imageView7"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="53dp">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageView11"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@mipmap/find3_1"
+                android:onClick="level2" />
+
+            <ImageView
+                android:id="@+id/imageView10"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@mipmap/find3_2"
+                android:onClick="level2" />
+
+            <ImageView
+                android:id="@+id/imageView9"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:alpha="0.99"
+                android:background="@mipmap/find3_3"
+                android:onClick="level2" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageView15"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@mipmap/find3_4"
+                android:onClick="level2" />
+
+            <ImageView
+                android:id="@+id/imageView14"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:alpha="0.99"
+                android:background="@mipmap/find3_5"
+                android:onClick="level2" />
+
+            <ImageView
+                android:id="@+id/imageView12"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@mipmap/find3_6"
+                android:onClick="level2"
+                android:text="Button" />
+        </TableRow>
+
+    </TableLayout>
+
+</android.support.constraint.ConstraintLayout>

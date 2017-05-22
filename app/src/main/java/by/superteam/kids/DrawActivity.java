@@ -1,14 +1,25 @@
 package by.superteam.kids;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.Region;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,15 +27,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class DrawActivity extends AppCompatActivity implements View.OnTouchListener {
-    int currentColor = Color.WHITE;
+    static int currentColor = Color.WHITE;
     int a;
+    static int errCounter;
+    static DrawActivity drawActivity;
     MenuItem pastTouched;
-
-    Object[][] colors = {
+Bitmap rightBitmap;
+    static Object[][] colors = {
             {"white", Color.WHITE, R.drawable.white_color_touched},
             {"red", Color.RED, R.drawable.red_color_touched},
             {"green", Color.GREEN, R.drawable.green_color_touched},
@@ -51,8 +65,95 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
                             {8}, {8}, {8}, {8}, {8}, {8}
                     },
                     {
-                            {true, 2, 0}, {false, 0, 2}, {8}, {8}, {0}, {0}
+                            {0}, {0}, {8}, {8}, {0}, {0}
                     }
+            },
+            {
+                    {
+                            {0}, {0}, {8}, {8}, {0}, {0}
+                    },
+                    {
+                            {true,0,8}, {8}, {8}, {8}, {8}, {false,8,0}
+                    },
+                    {
+                            {8}, {8}, {8}, {8}, {8}, {8}
+                    },
+                    {
+                            {false,0,8}, {8}, {8}, {8}, {8}, {true,8,0}
+                    },
+                    {
+                            {0}, {8}, {8}, {8}, {8}, {0}
+                    }
+            },
+            {
+                    {
+                            {8}, {0}, {8}, {0}, {8}
+                    },
+                    {
+                            {0}, {8}, {8}, {8}, {0}
+                    },
+                    {
+                            {0}, {8}, {8}, {8}, {0}
+                    },
+                    {
+                            {0}, {8}, {8}, {8}, {0}
+                    },
+                    {
+                            {8}, {0}, {0}, {0}, {8}
+                    }
+            },
+            {
+                    {
+                            {8}, {0}, {8}, {0}, {8}
+                    },
+                    {
+                            {0}, {8}, {8}, {8}, {0}
+                    },
+                    {
+                            {0}, {8}, {8}, {8}, {0}
+                    },
+                    {
+                            {0}, {8}, {8}, {8}, {0}
+                    },
+                    {
+                            {8}, {8}, {8}, {8}, {8}
+                    }
+            },
+            {
+                    {
+                            {4}, {1}, {4}
+                    },
+                    {
+                            {1}, {4}, {1}
+                    },
+                    {
+                            {4}, {1}, {4}
+                    },
+
+            },
+            {
+                    {
+                            {7}, {8}, {1}
+                    },
+                    {
+                            {2}, {3}, {4}
+                    },
+                    {
+                            {5}, {6}, {7}
+                    },
+
+            },
+            {
+                    {
+                            {8}, {8}, {1},{1}, {5}, {5}
+                    },
+                    {
+                            {5}, {5}, {8},{8}, {1}, {1}
+                    },
+                    {
+                            {1}, {1}, {5},{5}, {8}, {8}
+                    },
+
             }
     };
     ArrayList<ArrayList<Object>> errorsForTriangle = new ArrayList<>();
@@ -64,7 +165,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
                 for (int i = 0; i < errors.size(); i++) {
                     final RectView view = (RectView) ((LinearLayout) DrawActivity.this.humanSide.getChildAt((int) errors.get(i).get(0))).getChildAt((int) errors.get(i).get(1));
                     float newAlpha = (1f - (float) errors.get(i).get(2) - 0.02f);
-                    view.setAlpha(newAlpha);
+try{                    view.setAlpha(newAlpha);}catch (Exception e){}
 
                     errors.get(i).set(2, 1f - newAlpha);
                     if (newAlpha < 0.02f) {
@@ -89,12 +190,12 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
             }
         }
     });
-    int level = 0;
+    static int level = 0;
     int x;
     int y;
     int width;
     int height;
-    LinearLayout humanSide;
+    static LinearLayout humanSide;
     Thread errorTriangleThread = new Thread(new Runnable() {
         @Override
         public void run() {
@@ -139,11 +240,12 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
             }
         }
     });
-
+    LinearLayout computerSide;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draw);
+        errCounter = 0;
         Intent intent = getIntent();
         level = intent.getIntExtra("level", 0);
         x = levels[level][0].length;
@@ -155,7 +257,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
         width = size.x;
         height = size.y;
         humanSide = (LinearLayout) findViewById(R.id.human_side_second);
-        LinearLayout computerSide = (LinearLayout) findViewById(R.id.computer_side_second);
+       computerSide = (LinearLayout) findViewById(R.id.computer_side_second);
         drawMatrix(x, y, humanSide, width / 2, height, true);
         drawMatrix(x, y, computerSide, width / 2, height, false);
         errorThread.start();
@@ -163,6 +265,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
     }
 
     public void drawMatrix(int x, int y, LinearLayout mainLayout, int width, int height, boolean ishuman) {
+
         for (int i = 0; i < y; i++) {
             LinearLayout tr = new LinearLayout(this);
             mainLayout.addView(tr);
@@ -177,14 +280,16 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
 
                 }
                 if (levels[level][i][j].length > 1) {
-                    TriangleView view = new TriangleView(this, (boolean) levels[level][i][j][0], (Integer) colors[(int) levels[level][i][j][1]][1], (Integer) colors[(int) levels[level][i][j][2]][1], a, a);
+                    TriangleView view = new TriangleView(this, (boolean) levels[level][i][j][0], (Integer) colors[(int) levels[level][i][j][1]][1], (Integer) colors[(int) levels[level][i][j][2]][1], a, a, ishuman);
 
                     view.setPadding(a / 20, a / 20, a / 20, a / 20);
                     tr.addView(view, new ActionBar.LayoutParams(a, a));
                     if (ishuman) {
                         view.changeColor(true, (Integer) colors[0][1]);
                         view.changeColor(false, (Integer) colors[0][1]);
-                        view.setOnTouchListener(this);
+                      //  if ((int) levels[level][i][j][1] != 0) errCounter++;
+                       // if ((int) levels[level][i][j][2] != 0) errCounter++;
+
 
                     }
                 } else {
@@ -194,13 +299,16 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
                     if (ishuman) {
                         view.changeColor((Integer) colors[0][1]);
                         view.setOnTouchListener(this);
+                        if((int) levels[level][i][j][0]!=0)errCounter++;
 
                     }
                 }
 
             }
         }
-    }
+        computerSide.setDrawingCacheEnabled(true);
+
+        }
 
 
     @Override
@@ -214,6 +322,7 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
         switch (item.getItemId()) {
             case R.id.removeAll:
                 humanSide.removeAllViews();
+                errCounter=0;
                 drawMatrix(x, y, humanSide, width / 2, height, true);
                 return true;
             case R.id.action_help:
@@ -264,55 +373,306 @@ public class DrawActivity extends AppCompatActivity implements View.OnTouchListe
         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
             int i = humanSide.indexOfChild((LinearLayout) view.getParent());
             int j = ((LinearLayout) view.getParent()).indexOfChild(view);
-            if (view.getClass() == TriangleView.class) {
-                for (int k = 0; k < errorsForTriangle.size(); k++) {
-                    if (errorsForTriangle.get(k).get(0).equals(view)) {
-                        errorsForTriangle.remove(k);
 
-                        break;
-                    }
+            for (int k = 0; k < errors.size(); k++) {
+                if ((int) errors.get(k).get(0) == i && (int) errors.get(k).get(1) == j) {
+                    errors.remove(k);
+                    view.setAlpha(1f);
+                    break;
                 }
-                if (!((TriangleView) view).isLeftTop) {
-                    ((TriangleView) view).setAlpha(255, motionEvent.getX() < motionEvent.getY());
-                    ((TriangleView) view).changeColor(motionEvent.getX() < motionEvent.getY(), currentColor);
-                    if (currentColor != (int) colors[(int) levels[level][i][j][(motionEvent.getX() < motionEvent.getY()) ? 1 : 2]][1]) {
-                        //((TriangleView) view).changeColor(motionEvent.getX() < motionEvent.getY(), (int) colors[0][1]);
-                        ArrayList<Object> error = new ArrayList<>();
-                        error.add(view);
-                        error.add(255);
-                        error.add(motionEvent.getX() < motionEvent.getY());
-                        errorsForTriangle.add(error);
+            }
+            if((int)colors[(int) levels[level][i][j][0]][1]==currentColor&&((RectView)view).color!=currentColor)errCounter--;
+            if((int)colors[(int) levels[level][i][j][0]][1]!=currentColor&&((RectView)view).color==(int)colors[(int) levels[level][i][j][0]][1]&&((RectView)view).color!=Color.WHITE)errCounter++;
+            if(errCounter==0){
+
+win();
+
+
+
+
+            }
+            ((RectView) view).changeColor(currentColor);
+
+            if (currentColor != (int) colors[(int) levels[level][i][j][0]][1]) {
+
+                ArrayList<Object> error = new ArrayList<>();
+                error.add(i);
+                error.add(j);
+                error.add(0.1f);
+                errors.add(error);
+            }
+
+
+
+
+        }
+        Log.d("rect view",DrawActivity.errCounter+"");
+
+
+
+        return false;
+    }
+    public void win(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(DrawActivity.this);
+        builder.setTitle("Ты победил")
+                .setMessage("Уровень " + (level+1) + " пройден!")
+                .setIcon(R.drawable.human_button_touched)
+                .setCancelable(false)
+                .setNeutralButton("Заново", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = getIntent();
+                        startActivity(intent);
+                        finish();
                     }
-                } else {
-                    ((TriangleView) view).setAlpha(255, a - motionEvent.getX() > motionEvent.getY());
-                    ((TriangleView) view).changeColor(a - motionEvent.getX() > motionEvent.getY(), currentColor);
-                    if (currentColor != (int) colors[(int) levels[level][i][j][(motionEvent.getX() > motionEvent.getY()) ? 1 : 2]][1]) {
-                        ArrayList<Object> error = new ArrayList<>();
-                        error.add(view);
-                        error.add(255);
-                        error.add(motionEvent.getX() > motionEvent.getY());
-                        errorsForTriangle.add(error);
-                    }
+                })
+                .setNegativeButton("В меню",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                finish();
+                            }
+                        });
+        if(level+1<levels.length){
+            builder.setPositiveButton("Следующий", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Intent intent = getIntent();
+                    intent.putExtra("level",level+1);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }else{
+            builder.setMessage("Ты прошел раздел \"Раскрась по образцу\"");
+        }
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+class TriangleView extends View implements View.OnTouchListener {
+    public int needColor1;
+    public int needColor2;
+    public int color1;
+    public int color2;
+    public int leftAlpha;
+    public int rightAlpha;
+    public boolean isLeftTop;
+    public int height;
+    public int width;
+    private ShapeDrawable mDrawable;
+    Paint p;
+    Region region;
+    Region clipRegion;
+    Path path;
+    Path pathLeft;
+    Rect rect;
+    Canvas canvas;
+    Path pathRight;
+    public TriangleView(Context context, boolean isLeftTop, int color1, int color2, int width, int height, boolean human) {
+        super(context);
+        needColor1=color1;
+        needColor2=color2;
+        this.isLeftTop = isLeftTop;
+        this.color1 = color1;
+        this.color2 = color2;
+        this.height = height;
+        this.width = width;
+        leftAlpha = 255;
+        rightAlpha = 255;
+        p = new Paint();
+        p.setStrokeWidth(3);
+
+
+        // path, треугольник
+        if (isLeftTop) {
+            path = new Path();
+            path.moveTo(width, 0);
+            path.lineTo(0, height);
+            path.lineTo(0, 0);
+            path.close();
+            pathRight = new Path();
+            pathRight.moveTo(width, 0);
+            pathRight.lineTo(0, height);
+            pathRight.lineTo(width, height);
+            pathRight.close();
+            pathLeft = new Path();
+            pathLeft.moveTo(width, 0);
+            pathLeft.lineTo(0, 0);
+            pathLeft.lineTo(0, height);
+            pathLeft.lineTo(width, height);
+            pathLeft.lineTo(width, 0);
+            pathLeft.lineTo(0, height);
+            pathLeft.close();
+        } else {
+            path = new Path();
+            path.moveTo(0, height);
+            path.lineTo(width, height);
+            path.lineTo(0, 0);
+            path.close();
+            pathLeft = new Path();
+            pathLeft.moveTo(0, 0);
+            pathLeft.lineTo(width, 0);
+            pathLeft.lineTo(width, height);
+            pathLeft.lineTo(0, height);
+            pathLeft.lineTo(0, 0);
+            pathLeft.lineTo(width, height);
+            pathLeft.close();
+            pathRight = new Path();
+            pathRight.moveTo(0, 0);
+            pathRight.lineTo(width, height);
+            pathRight.lineTo(width, 0);
+            pathRight.close();
+        }
+        if (human) this.setOnTouchListener(this);
+
+    }
+
+    @Override
+    protected void onDraw(Canvas canva) {
+        this.canvas = canva;
+        super.onDraw(canvas);
+        //    canvas.drawColor(color2);
+
+
+        p.setStyle(Paint.Style.FILL);
+        p.setColor(color2);
+        p.setAlpha(rightAlpha);
+        canvas.drawPath(pathRight, p);
+        p.setStyle(Paint.Style.FILL);
+        p.setColor(color1);
+        p.setAlpha(leftAlpha);
+        canvas.drawPath(path, p);
+
+        p.setColor(Color.BLACK);
+        p.setStyle(Paint.Style.STROKE);
+        canvas.drawPath(pathLeft, p);
+
+    }
+
+    public void changeColor(boolean isPart1, int color) {
+        if (isPart1) {
+
+            if((color!=needColor1&&needColor1!=Color.WHITE)&&this.color1==needColor1){
+                DrawActivity.errCounter++;
+            }
+            if((color==needColor1)&&this.color1!=needColor1&&leftAlpha==255){
+                DrawActivity.errCounter--;
+            }
+            this.color1 = color;
+        } else {
+            if((color!=needColor2&&needColor2!=Color.WHITE)&&this.color2==needColor2){
+                DrawActivity.errCounter++;
+            }
+            if((color==needColor2)&&this.color2!=needColor2&&rightAlpha==255){
+                DrawActivity.errCounter--;
+            }
+            this.color2 = color;
+        }
+        Log.d("Triangle view",errCounter+"");
+        this.invalidate();
+        if(DrawActivity.errCounter<=0){
+            DrawActivity.this.win();
+        }
+    }
+
+    public void setAlpha(int alpha, boolean isLeft) {
+        if (isLeft) {
+            leftAlpha = alpha;
+        } else {
+            rightAlpha = alpha;
+        }
+        invalidate();
+    }
+
+    public void setAlphaMinus(int minus, boolean isLeft) {
+        if (isLeft) {
+            leftAlpha -= minus;
+        } else {
+            rightAlpha -= minus;
+        }
+        this.invalidate();
+    }
+
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+            float x = motionEvent.getX();
+            float y = motionEvent.getY();
+            if (this.isLeftTop) {
+                this.changeColor(width - x > y, DrawActivity.currentColor);
+                int i = DrawActivity.humanSide.indexOfChild((LinearLayout) view.getParent());
+                int j = ((LinearLayout) view.getParent()).indexOfChild(view);
+                if ((int) DrawActivity.colors[(Integer) (DrawActivity.levels[DrawActivity.level][i][j][(width - x > y) ? 1 : 2])][1] != DrawActivity.currentColor) {
+                    final TriangleView triangleView = this;
+                    final boolean isLeft = width - x > y;
+
+                    final Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            while ((isLeft && triangleView.leftAlpha > 3) || (isLeft == false && triangleView.rightAlpha > 3)) {
+                                ((DrawActivity) triangleView.getContext()).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        triangleView.setAlphaMinus(1, isLeft);
+                                    }
+                                });
+                                try {
+                                    Thread.sleep(10);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            ((DrawActivity) triangleView.getContext()).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    triangleView.changeColor(isLeft, Color.WHITE);
+                                    triangleView.setAlpha(255, isLeft);
+                                }
+                            });
+                        }
+                    });
+                    thread.start();
                 }
             } else {
-                for (int k = 0; k < errors.size(); k++) {
-                    if ((int) errors.get(k).get(0) == i && (int) errors.get(k).get(1) == j) {
-                        errors.remove(k);
-                        view.setAlpha(1f);
-                        break;
-                    }
-                }
-                ((RectView) view).changeColor(currentColor);
+                this.changeColor(x < y, DrawActivity.currentColor);
 
-                if (currentColor != (int) colors[(int) levels[level][i][j][0]][1]) {
-                    ArrayList<Object> error = new ArrayList<>();
-                    error.add(i);
-                    error.add(j);
-                    error.add(0.1f);
-                    errors.add(error);
+                int i = DrawActivity.humanSide.indexOfChild((LinearLayout) view.getParent());
+                int j = ((LinearLayout) view.getParent()).indexOfChild(view);
+                if ((int) DrawActivity.colors[(Integer) (DrawActivity.levels[DrawActivity.level][i][j][(x < y) ? 1 : 2])][1] != DrawActivity.currentColor) {
+                    final TriangleView triangleView = this;
+                    final boolean isLeft = x < y;
+                    final Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            while ((isLeft && triangleView.leftAlpha > 1) || (!isLeft && triangleView.rightAlpha > 1)) {
+                                ((DrawActivity) triangleView.getContext()).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        triangleView.setAlphaMinus(1, isLeft);
+                                    }
+                                });
+                                try {
+                                    Thread.sleep(10);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            ((DrawActivity) triangleView.getContext()).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    triangleView.changeColor(isLeft, Color.WHITE);
+                                    triangleView.setAlpha(255, isLeft);
+                                }
+                            });
+                        }
+                    });
+                    thread.start();
                 }
             }
         }
         return false;
     }
-}
+
+
+}}

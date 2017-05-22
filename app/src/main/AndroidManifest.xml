@@ -3,11 +3,11 @@
     package="by.superteam.kids">
 
     <application
+        android:screenOrientation="landscape"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:screenOrientation="landscape"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -22,9 +22,9 @@
         <activity
             android:name=".PositionActivity"
             android:screenOrientation="landscape" />
-        <activity
-            android:name=".DrawActivity"
-            android:screenOrientation="landscape" />
+        <activity android:name=".DrawActivity" android:screenOrientation="landscape"></activity>
+        <activity android:name=".PuzzleActivity" android:screenOrientation="landscape"></activity>
+        <activity android:name=".FindSimilarActivity" android:screenOrientation="landscape"></activity>
         <activity
             android:name=".FindDifference"
             android:screenOrientation="landscape"
