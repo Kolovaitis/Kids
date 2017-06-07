@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -16,12 +17,9 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 public class CanvasView extends AppCompatImageView{
-    private static String LOG_TAG = "findDiffLog";
+    private static String LOG_TAG = "canvasViewLog";
 
     private Paint paint;
-
-    private boolean isBoundsSet = false;
-    private float[] offset = new float[2];
 
     private ArrayList<Figure> figures;
     private ArrayList<Figure> backgroundFigures;
@@ -88,7 +86,8 @@ public class CanvasView extends AppCompatImageView{
     }
 
     public void setImage(int imgRes) {
-        this.setImageResource(imgRes);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), imgRes);
+        this.setImageBitmap(bitmap);
     }
 
     public void setPaintStyle(Paint.Style style){
@@ -98,25 +97,6 @@ public class CanvasView extends AppCompatImageView{
     public void setPaintStyle(Paint.Style style, int strokeWidth){
         paint.setStyle(style);
         paint.setStrokeWidth(strokeWidth);
-    }
-
-    private void calculateOffset(){
-        float[] values = new float[9];
-
-        Matrix m = this.getImageMatrix();
-        m.getValues(values);
-
-//        String logMeassage = "Values in array: ";
-//        for(int i = 0; i<values.length; i++){
-//        }
-
-
-        Log.d(LOG_TAG, "Values in array: " + values.toString());
-
-        offset[0] = values[2];
-        offset[1] = values[5];
-
-        Log.d(LOG_TAG, "Another offset is " + Float.toString(values[5]) + " " + Float.toString(values[2]));
     }
 
     public void defaultPaintStyle(){
@@ -138,11 +118,22 @@ public class CanvasView extends AppCompatImageView{
     }
 
     public float[] getOffset() {
-        if(!isBoundsSet){
-            calculateOffset();
-            isBoundsSet = true;
+        float[] values = new float[9];
+
+        Matrix m = this.getImageMatrix();
+        m.getValues(values);
+
+        String logMeassage = "Values in array: ";
+        for(int i = 0; i<values.length; i++){
+            logMeassage = logMeassage + Float.toString(values[i]);
+
+            if (i!=values.length-1){
+                logMeassage = logMeassage  + ", ";
+            }
         }
-        return offset;
+         Log.d(LOG_TAG, logMeassage);
+
+        return new float[]{values[2], values[5]};
     }
 
     @Override
@@ -151,15 +142,39 @@ public class CanvasView extends AppCompatImageView{
         drawFigures(canvas);
     }
 
-    public void drawRect(Canvas canvas, int i){
-        this.paint.setColor(figures.get(i).getColor());
-        canvas.drawRect(figures.get(i).getX(), figures.get(i).getY(), figures.get(i).getX() + ((Rect)figures.get(i)).getWidth(), figures.get(i).getY() + ((Rect)figures.get(i)).getHeight(), paint);
+    public void drawRect(Canvas canvas, Figure figure){
+        this.paint.setColor(figure.getColor());
+
+        Path path = new Path();
+
+        float coords[][] = ((Rect)figure).getCoords();
+        float subcoords[] = new float[16];
+        for (int j = 0; j<coords.length; j++){
+            for (int k = 0; k<4; k++){
+                if(k < 2) {
+                    subcoords[j * 4 + k] = coords[j % coords.length][k % 2];
+                }else{
+                    subcoords[j * 4 + k] = coords[(j + 1) % coords.length][k % 2];
+                }
+            }
+        }
+
+        path.moveTo(coords[0][0], coords[0][1]);
+        for (int i = 1; i<5; i++){
+            path.lineTo(coords[i%4][0], coords[i%4][1]);
+        }
+
+
+        canvas.drawPath(path, this.paint);
+        //canvas.drawRect(figure.getX(), figure.getY(), figure.getX() + ((Rect)figure).getWidth(), figure.getY() + ((Rect)figure).getHeight(), paint);
     }
 
-    public void drawTrigon(Canvas canvas, int i){
-        this.paint.setColor(figures.get(i).getColor());
+    public void drawTrigon(Canvas canvas, Figure figure){
+        this.paint.setColor(figure.getColor());
 
-        float coords[][] = ((Trigon)figures.get(i)).getCoords();
+        Path path = new Path();
+
+        float coords[][] = ((Trigon)figure).getCoords();
         float subcoords[] = new float[12];
         for (int j = 0; j<coords.length; j++){
             for (int k = 0; k<4; k++){
@@ -171,78 +186,66 @@ public class CanvasView extends AppCompatImageView{
             }
         }
 
-        canvas.drawLines(subcoords, paint);
+        path.moveTo(coords[0][0], coords[0][1]);
+        for (int i = 1; i<4; i++){
+            path.lineTo(coords[i%3][0], coords[i%3][1]);
+        }
+
+        //canvas.drawLines(subcoords, paint);
+        canvas.drawPath(path, this.paint);
     }
 
-    public void drawCircle(Canvas canvas, int i){
-        paint.setColor(figures.get(i).getColor());
-        canvas.drawCircle(figures.get(i).getX(), figures.get(i).getY(), ((Circle)figures.get(i)).getRadius(), paint);
+    public void drawCircle(Canvas canvas, Figure figure){
+        paint.setColor(figure.getColor());
+        canvas.drawCircle(figure.getX(), figure.getY(), ((Circle)figure).getRadius(), paint);
     }
 
     public void drawFigures(Canvas canvas) {
-        if(!isBoundsSet){
-            calculateOffset();
-            isBoundsSet = true;
-        }
-
         for (int i = 0; i < backgroundFigures.size(); i++){
-            switch (backgroundFigures.get(i).getFigureType()) {
-                case CIRCLE:
-                    drawCircle(canvas, i);
-                    break;
-                case TRIGON:
-                    drawTrigon(canvas, i);
-                    break;
-                case RECTANGLE:
-                    drawRect(canvas, i);
-                    break;
+            if (backgroundFigures.get(i).isVisible()) {
+                switch (backgroundFigures.get(i).getFigureType()) {
+                    case CIRCLE:
+                        drawCircle(canvas, backgroundFigures.get(i));
+                        break;
+                    case TRIGON:
+                        drawTrigon(canvas, backgroundFigures.get(i));
+                        break;
+                    case RECTANGLE:
+                        drawRect(canvas, backgroundFigures.get(i));
+                        break;
+                }
             }
         }
 
         for (int i = 0; i < figures.size(); i++){
-            /*figures.get(i).setX((float)((this.getWidth() - offset[0]) * figures.get(i).getRelativeX()));
-            figures.get(i).setY((float)((this.getHeight() - offset[1]) * figures.get(i).getRelativeY()));*/
-            switch (figures.get(i).getFigureType()) {
-                case CIRCLE:
-                    drawCircle(canvas, i);
-                    break;
-                case TRIGON:
-                    drawTrigon(canvas, i);
-                    break;
-                case RECTANGLE:
-                    drawRect(canvas, i);
-                    break;
+            if (figures.get(i).isVisible()) {
+                switch (figures.get(i).getFigureType()) {
+                    case CIRCLE:
+                        drawCircle(canvas, figures.get(i));
+                        break;
+                    case TRIGON:
+                        drawTrigon(canvas, figures.get(i));
+                        break;
+                    case RECTANGLE:
+                        drawRect(canvas, figures.get(i));
+                        break;
+                }
             }
         }
     }
-
-    public float[] getRealCoords(float x, float y){
-
-        if(!isBoundsSet){
-            calculateOffset();
-            isBoundsSet = true;
-        }
-
-//        float[] realCoords = new float[2];
-//
-//        realCoords[0] = (x - offset[0]);
-//        realCoords[1] = (y - offset[1]);
-//
-//        return realCoords;
-
-        return new float[]{x, y};
-    }
 }
 
-abstract class Figure {
+abstract class Figure{
     private float x;
     private float y;
     private double relativeX;
     private double relativeY;
     private int color;
     private int rotateAngle;
+    private boolean filled;
     private boolean draggable;
     private boolean visible;
+    private boolean moving;
 
     enum FigureTypes{
         RECTANGLE,
@@ -257,6 +260,10 @@ abstract class Figure {
         this.relativeY = relativeY;
         this.color = Color.GREEN;
         this.rotateAngle = 0;
+        this.filled = false;
+        this.draggable = false;
+        this.visible = true;
+        this.moving = false;
     }
 
 
@@ -267,6 +274,10 @@ abstract class Figure {
         this.relativeY = relativeY;
         this.color = Color.GREEN;
         this.rotateAngle = rotateAngle;
+        this.filled = false;
+        this.draggable = false;
+        this.visible = true;
+        this.moving = false;
     }
 
     public Figure(double relativeX, double relativeY, int rotateAngle, int color){
@@ -276,6 +287,10 @@ abstract class Figure {
         this.relativeY = relativeY;
         this.color = color;
         this.rotateAngle = rotateAngle;
+        this.filled = false;
+        this.draggable = false;
+        this.visible = true;
+        this.moving = false;
     }
 
     public Figure(float x, float y){
@@ -283,6 +298,10 @@ abstract class Figure {
         this.y = y;
         this.color = Color.GREEN;
         this.rotateAngle = 0;
+        this.filled = false;
+        this.draggable = false;
+        this.visible = true;
+        this.moving = false;
     }
 
 
@@ -291,6 +310,10 @@ abstract class Figure {
         this.y = y;
         this.color = Color.GREEN;
         this.rotateAngle = rotateAngle;
+        this.filled = false;
+        this.draggable = false;
+        this.visible = true;
+        this.moving = false;
     }
 
     public Figure(float x, float y, int rotateAngle, int color){
@@ -298,6 +321,10 @@ abstract class Figure {
         this.y = y;
         this.color = color;
         this.rotateAngle = rotateAngle;
+        this.filled = false;
+        this.draggable = false;
+        this.visible = true;
+        this.moving = false;
     }
     public void setX(float x) {
         this.x = x;
@@ -319,12 +346,27 @@ abstract class Figure {
         this.color = color;
     }
 
+    public void setRotateAngle(int rotateAngle){
+        this.rotateAngle = rotateAngle;
+    }
+
+    public void setFilled(boolean filled) {
+        this.filled = filled;
+    }
+
     public void setDraggable(boolean draggable) {
         this.draggable = draggable;
     }
 
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public void setMoving(boolean moving) {
+        if(draggable){
+            this.moving = moving;
+            normalizeRotate();
+        }
     }
 
     public float getX() {
@@ -347,12 +389,20 @@ abstract class Figure {
         return color;
     }
 
+    public boolean isFilled() {
+        return filled;
+    }
+
     public boolean isDraggable() {
         return draggable;
     }
 
     public boolean isVisible() {
         return visible;
+    }
+
+    public boolean isMoving() {
+        return moving;
     }
 
     public int getRotateAngle() {
@@ -371,7 +421,15 @@ abstract class Figure {
 
     public abstract boolean containsPoint(float x, float y);
 
+    public abstract boolean equals(Figure figure);
+
+    public abstract boolean gravitatableTo(Figure figure);
+
     public abstract String toString();
+
+    public abstract int normalizeRotate(int angle);
+    
+    public abstract void normalizeRotate();
 }
 
 class Rect extends Figure {
@@ -504,22 +562,6 @@ class Rect extends Figure {
                 resultCalculation++;
             }
         }
-        //(x1 - x0) * (y2 - y1) - (x2 - x1) * (y1 - y0);
-
-        /*for (int i = 0; i<RECT_ANGLE; i++){
-            if(compositions[i] == 0){
-                return true;
-            }
-        }
-
-
-        for(int i = 0; i<RECT_ANGLE; i++){
-            if(compositions[i] < 0){
-                resultCalculation--;
-            }else {
-                resultCalculation++;
-            }
-        }*/
 
         if(resultCalculation == RECT_ANGLE || resultCalculation == -RECT_ANGLE){
             return true;
@@ -529,10 +571,69 @@ class Rect extends Figure {
     }
 
     @Override
+    public boolean equals(Figure figure) {
+        if (figure.getFigureType() == FigureType){
+            if (((Rect)figure).getWidth() == this.width && ((Rect)figure).getHeight() == this.height && figure.getColor() == this.getColor() && figure.isDraggable() == this.isDraggable() && figure.isVisible() == this.isVisible()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean gravitatableTo(Figure figure) {
+        if (figure.getFigureType() == FigureType){
+            if (((Rect)figure).getWidth() == this.width && ((Rect)figure).getHeight() == this.height && figure.getRotateAngle() == this.getRotateAngle()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    @Override
     public String toString() {
         //String respponse = "{" + "\"x\":\"" + this.getX() + "\", \"y\":\"" + this.getY() + "\", \"figureType\":\"rectangle\", \"width\":\"" + this.getWidth() + "\", \"height\":\"" + this.getHeight() + "\", \"rotate\":\"" + this.getRotateAngle() + "\"}";
         String respponse = "{" + "\"x\":\"" + this.getX() + "\", \"y\":\"" + this.getY() + "\", \"relX\":\"" + this.getRelativeX() + "\", \"relY\":\"" + this.getRelativeY() + "\", \"figureType\":\"rectangle\", \"width\":\"" + this.getWidth() + "\", \"height\":\"" + this.getHeight() + "\", \"rotate\":\"" + this.getRotateAngle() + "\"}";
         return respponse;
+    }
+
+    @Override
+    public void normalizeRotate() {
+        int currentAngle = this.getRotateAngle();
+        if (this.width == this.height){
+            currentAngle = currentAngle % 3;
+            if (currentAngle < 0){
+                currentAngle = 3 - currentAngle;
+            }
+        }else {
+            if (currentAngle > 3){
+                currentAngle = -2;
+            }
+            if (currentAngle < -2){
+                currentAngle = 3;
+            }
+        }
+
+        this.setRotateAngle(currentAngle);
+    }
+
+    @Override
+    public int normalizeRotate(int angle) {
+        if (this.width == this.height){
+            angle = angle % 3;
+            if (angle < 0){
+                angle = 3 - angle;
+            }
+        }else {
+            if (angle > 3){
+                angle = -2;
+            }
+            if (angle < -2){
+                angle = 3;
+            }
+        }
+        return angle;
     }
 }
 
@@ -681,21 +782,6 @@ class Trigon extends Figure {
                 resultCalculation++;
             }
         }
-        //(x1 - x0) * (y2 - y1) - (x2 - x1) * (y1 - y0);
-
-        /*for (int i = 0; i<TRIGON_ANGLE; i++){
-            if(compositions[i] == 0){
-                return true;
-            }
-        }
-
-        for(int i = 0; i<TRIGON_ANGLE; i++){
-            if(compositions[i] < 0){
-                resultCalculation--;
-            }else {
-                resultCalculation++;
-            }
-        }*/
 
         if(resultCalculation == TRIGON_ANGLE || resultCalculation == -TRIGON_ANGLE){
             return true;
@@ -705,10 +791,68 @@ class Trigon extends Figure {
     }
 
     @Override
+    public boolean equals(Figure figure) {
+        if (figure.getFigureType() == FigureType){
+            if (((Trigon)figure).getBase() == this.base && ((Trigon)figure).getHeight() == this.height && figure.getColor() == this.getColor() && figure.isDraggable() == this.isDraggable() && figure.isVisible() == this.isVisible()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean gravitatableTo(Figure figure) {
+        if (figure.getFigureType() == FigureType){
+            if (((Trigon)figure).getBase() == this.base && ((Trigon)figure).getHeight() == this.height && figure.getRotateAngle() == this.getRotateAngle()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
         //String respponse = "{" + "\"x\":\"" + this.getX() + "\", \"y\":\"" + this.getY() + "\", \"figureType\":\"trigon\", \"base\":\"" + this.getBase() + "\", \"height\":\"" + this.getHeight() + "\", \"rotate\":\"" + this.getRotateAngle() + "\"}";
         String respponse = "{" + "\"x\":\"" + this.getX() + "\", \"y\":\"" + this.getY() + "\", \"relX\":\"" + this.getRelativeX() + "\", \"relY\":\"" + this.getRelativeY() + "\", \"figureType\":\"trigon\", \"base\":\"" + this.getBase() + "\", \"height\":\"" + this.getHeight() + "\", \"rotate\":\"" + this.getRotateAngle() + "\"}";
         return respponse;
+    }
+
+    @Override
+    public void normalizeRotate() {
+        int currentAngle = this.getRotateAngle();
+        if (height == base * 0.866){
+            currentAngle = currentAngle % 3;
+            if (currentAngle < 0){
+                currentAngle = 3 - currentAngle;
+            }
+        }else {
+            if (currentAngle > 6){
+                currentAngle = -5;
+            }
+            if (currentAngle < -5){
+                currentAngle = 6;
+            }
+        }
+        
+        this.setRotateAngle(currentAngle);
+    }
+
+    @Override
+    public int normalizeRotate(int angle) {
+        if (height == base * 0.866){
+            angle = angle % 3;
+            if (angle < 0){
+                angle = 3 - angle;
+            }
+        }else {
+            if (angle > 6){
+                angle = -5;
+            }
+            if (angle < -5){
+                angle = 6;
+            }
+        }
+        return angle;
     }
 }
 
@@ -762,9 +906,39 @@ class Circle extends Figure {
     }
 
     @Override
+    public boolean equals(Figure figure) {
+        if (figure.getFigureType() == FigureType){
+            if (((Circle)figure).getRadius() == this.radius && figure.getColor() == this.getColor() && figure.isDraggable() == this.isDraggable() && figure.isVisible() == this.isVisible()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean gravitatableTo(Figure figure) {
+        if (figure.getFigureType() == FigureType){
+            if (((Circle)figure).getRadius() == this.radius && figure.getRotateAngle() == this.getRotateAngle()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
         //String respponse = "{" + "\"x\":\"" + this.getX() + "\", \"y\":\"" + this.getY() + "\", \"figureType\":\"circle\", \"radius\":\"" + this.getRadius() + "\"}";
         String respponse = "{" + "\"x\":\"" + this.getX() + "\", \"y\":\"" + this.getY() + "\", \"relX\":\"" + this.getRelativeX() + "\", \"relY\":\"" + this.getRelativeY() + "\", \"figureType\":\"circle\", \"radius\":\"" + this.getRadius() + "\"}";
         return respponse;
+    }
+
+    @Override
+    public void normalizeRotate() {
+        this.setRotateAngle(0);
+    }
+
+    @Override
+    public int  normalizeRotate(int angle) {
+        return 0;
     }
 }

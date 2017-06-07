@@ -35,5 +35,10 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("level",0);
         startActivity(intent);
     }
+    public void tangrammComp(View v){
+        Intent intent=new Intent(this,TangrammComponents.class);
+        intent.putExtra("level",0);
+        startActivity(intent);
+    }
 
 }

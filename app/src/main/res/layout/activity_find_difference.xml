@@ -1,35 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="by.superteam.kids.FindDifference">
 
     <LinearLayout
         android:id="@+id/attemptBar"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="35dp"
         android:orientation="horizontal"
-        android:weightSum="1">
-
-        <TextView
-            android:id="@+id/tittle"
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:ems="10"
-            android:gravity="left"
-            android:hint="Level"
-            android:inputType="none" />
+        android:weightSum="2">
 
         <LinearLayout
             android:id="@+id/attempts"
-            android:layout_width="200dp"
-            android:layout_height="match_parent"
-            android:gravity="left"
-            android:orientation="vertical"></LinearLayout>
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"></LinearLayout>
 
     </LinearLayout>
 
@@ -37,9 +26,10 @@
         android:id="@+id/images"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/background_dark"
+        android:layout_below="@+id/attemptBar"
+        android:background="@color/colorPrimaryDark"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp"></LinearLayout>
-</LinearLayout>
+</RelativeLayout>
