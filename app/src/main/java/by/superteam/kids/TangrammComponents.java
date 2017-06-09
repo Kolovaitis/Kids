@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -161,8 +162,8 @@ public class TangrammComponents extends AppCompatActivity {
                                 tangrammPlace.getFigures().get(i).setMoving(false);
                                 for (int j = 0; j<tangrammPlace.getBackgroundFigures().size(); j++){
                                     if (tangrammPlace.getFigures().get(i).gravitatableTo(tangrammPlace.getBackgroundFigures().get(j))){
-                                        double dist = Math.sqrt((tangrammPlace.getFigures().get(i).getX() - tangrammPlace.getBackgroundFigures().get(j).getX()) * ((tangrammPlace.getFigures().get(i).getX() - tangrammPlace.getBackgroundFigures().get(j).getX()) + ((tangrammPlace.getFigures().get(i).getY() - tangrammPlace.getBackgroundFigures().get(j).getY())*((tangrammPlace.getFigures().get(i).getY() - tangrammPlace.getBackgroundFigures().get(j).getY())))));
-                                        if (dist <= 25 * (getResources().getDisplayMetrics().density)){
+                                        double dist = Math.sqrt((tangrammPlace.getFigures().get(i).getX() - tangrammPlace.getBackgroundFigures().get(j).getX()) * (tangrammPlace.getFigures().get(i).getX() - tangrammPlace.getBackgroundFigures().get(j).getX()) + (tangrammPlace.getFigures().get(i).getY() - tangrammPlace.getBackgroundFigures().get(j).getY()) * (tangrammPlace.getFigures().get(i).getY() - tangrammPlace.getBackgroundFigures().get(j).getY()));
+                                        if (dist <= TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, getResources().getDisplayMetrics())){
                                             tangrammPlace.getFigures().get(i).setX(tangrammPlace.getBackgroundFigures().get(j).getX());
                                             tangrammPlace.getFigures().get(i).setY(tangrammPlace.getBackgroundFigures().get(j).getY());
                                             tangrammPlace.getFigures().get(i).setDraggable(false);
@@ -292,15 +293,15 @@ public class TangrammComponents extends AppCompatActivity {
 
                     switch (obj.getString("figureType")){
                         case "rectangle":
-                            figure = new Rect(Double.parseDouble(obj.getString("relX")), Double.parseDouble(obj.getString("relY")), Float.parseFloat(obj.getString("width")), Float.parseFloat(obj.getString("height")), Integer.parseInt(obj.getString("rotate")));
+                            figure = new Rect(Double.parseDouble(obj.getString("relX")), Double.parseDouble(obj.getString("relY")), TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Float.parseFloat(obj.getString("width")), getResources().getDisplayMetrics()), TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Float.parseFloat(obj.getString("height")), getResources().getDisplayMetrics()), Integer.parseInt(obj.getString("rotate")));
                             break;
 
                         case "trigon":
-                            figure = new Trigon(Double.parseDouble(obj.getString("relX")), Double.parseDouble(obj.getString("relY")), Float.parseFloat(obj.getString("base")), Float.parseFloat(obj.getString("height")), Integer.parseInt(obj.getString("rotate")));
+                            figure = new Trigon(Double.parseDouble(obj.getString("relX")), Double.parseDouble(obj.getString("relY")), TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Float.parseFloat(obj.getString("base")), getResources().getDisplayMetrics()), TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Float.parseFloat(obj.getString("height")), getResources().getDisplayMetrics()), Integer.parseInt(obj.getString("rotate")));
                             break;
 
                         case "circle":
-                            figure = new Circle(Double.parseDouble(obj.getString("relX")), Double.parseDouble(obj.getString("relY")), Float.parseFloat(obj.getString("radius")));
+                            figure = new Circle(Double.parseDouble(obj.getString("relX")), Double.parseDouble(obj.getString("relY")), TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Float.parseFloat(obj.getString("radius")), getResources().getDisplayMetrics()));
                             break;
                     }
 
@@ -317,15 +318,15 @@ public class TangrammComponents extends AppCompatActivity {
 
                     switch (obj.getString("figureType")){
                         case "rectangle":
-                            figure = new Rect(Double.parseDouble(obj.getString("relX")), Double.parseDouble(obj.getString("relY")), Float.parseFloat(obj.getString("width")), Float.parseFloat(obj.getString("height")), Integer.parseInt(obj.getString("rotate")));
+                            figure = new Rect(Double.parseDouble(obj.getString("relX")), Double.parseDouble(obj.getString("relY")), TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Float.parseFloat(obj.getString("width")), getResources().getDisplayMetrics()), TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Float.parseFloat(obj.getString("height")), getResources().getDisplayMetrics()), Integer.parseInt(obj.getString("rotate")));
                             break;
 
                         case "trigon":
-                            figure = new Trigon(Double.parseDouble(obj.getString("relX")), Double.parseDouble(obj.getString("relY")), Float.parseFloat(obj.getString("base")), Float.parseFloat(obj.getString("height")), Integer.parseInt(obj.getString("rotate")));
+                            figure = new Trigon(Double.parseDouble(obj.getString("relX")), Double.parseDouble(obj.getString("relY")), TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Float.parseFloat(obj.getString("base")), getResources().getDisplayMetrics()), TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Float.parseFloat(obj.getString("height")), getResources().getDisplayMetrics()), Integer.parseInt(obj.getString("rotate")));
                             break;
 
                         case "circle":
-                            figure = new Circle(Double.parseDouble(obj.getString("relX")), Double.parseDouble(obj.getString("relY")), Float.parseFloat(obj.getString("radius")));
+                            figure = new Circle(Double.parseDouble(obj.getString("relX")), Double.parseDouble(obj.getString("relY")), TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Float.parseFloat(obj.getString("radius")), getResources().getDisplayMetrics()));
                             break;
                     }
 

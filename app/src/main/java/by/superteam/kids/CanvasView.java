@@ -607,11 +607,12 @@ class Rect extends Figure {
                 currentAngle = 3 - currentAngle;
             }
         }else {
+            currentAngle = currentAngle % 6;
             if (currentAngle > 3){
-                currentAngle = -2;
+                currentAngle = -3 + (currentAngle % 3);
             }
             if (currentAngle < -2){
-                currentAngle = 3;
+                currentAngle = 3 + (currentAngle % 3);
             }
         }
 
@@ -626,11 +627,12 @@ class Rect extends Figure {
                 angle = 3 - angle;
             }
         }else {
+            angle = angle % 6;
             if (angle > 3){
-                angle = -2;
+                angle = -3 + (angle % 3);
             }
             if (angle < -2){
-                angle = 3;
+                angle = 3 + (angle % 3);
             }
         }
         return angle;
@@ -826,11 +828,12 @@ class Trigon extends Figure {
                 currentAngle = 3 - currentAngle;
             }
         }else {
+            currentAngle = currentAngle % 12;
             if (currentAngle > 6){
-                currentAngle = -5;
+                currentAngle = -6 + (currentAngle % 6);
             }
             if (currentAngle < -5){
-                currentAngle = 6;
+                currentAngle = 6 - (currentAngle % 6);
             }
         }
         
@@ -845,11 +848,18 @@ class Trigon extends Figure {
                 angle = 3 - angle;
             }
         }else {
-            if (angle > 6){
+            angle = angle % 12;
+            if(angle > 6){
+                angle = -6 + (angle % 6);
+            }
+            /*if (angle == 7){
                 angle = -5;
             }
-            if (angle < -5){
+            if (angle == -5){
                 angle = 6;
+            }*/
+            if (angle < -5){
+                angle = 6 + (angle % 6);
             }
         }
         return angle;
