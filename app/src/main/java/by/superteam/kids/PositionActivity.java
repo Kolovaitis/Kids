@@ -77,7 +77,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
             case R.id.action_help:
                 AlertDialog.Builder builder = new AlertDialog.Builder(PositionActivity.this);
                 builder.setTitle("Справка")
-                        .setMessage("Нажимай на левой части экрана кнопки, соответствующие кнопкам, показанным справа")
+                        .setMessage("Нажимайте на левой части экрана кнопки, соответствующие кнопкам, показанным справа")
                         .setIcon(R.mipmap.ic_launcher_round)
                         .setCancelable(false)
                         .setNegativeButton("ОК",
@@ -142,7 +142,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
             } else {
                 level++;
                 AlertDialog.Builder builder = new AlertDialog.Builder(PositionActivity.this);
-                builder.setTitle("Ты победил")
+                builder.setTitle("Вы победили")
                         .setMessage("Уровень " + level + " пройден!")
                         .setIcon(R.drawable.human_button_touched)
                         .setCancelable(false)
@@ -171,7 +171,7 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
                         }
                     });
                 }else{
-                    builder.setMessage("Ты прошел раздел \"Позиция\"");
+                    builder.setMessage("Вы прошли раздел \"Позиция\"");
                 }
                 AlertDialog alert = builder.create();
                 alert.show();
@@ -181,8 +181,8 @@ public class PositionActivity extends AppCompatActivity implements View.OnClickL
             view.setBackgroundResource(R.mipmap.error);
             if (waserror) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(PositionActivity.this);
-                builder.setTitle("Ты проиграл")
-                        .setMessage("Попробуй еще!")
+                builder.setTitle("Вы проиграли")
+                        .setMessage("Попробуйте еще!")
                         .setIcon(R.mipmap.error)
                         .setCancelable(false)
                         .setNegativeButton("ОК",

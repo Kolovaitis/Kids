@@ -205,7 +205,7 @@ public class TangrammComponents extends AppCompatActivity {
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Ты победил")
+        builder.setTitle("Вы победили")
                 .setMessage("Уровень " + Integer.toString(level + 1) + " пройден!")
                 .setIcon(R.drawable.human_button_touched)
                 .setCancelable(false)
@@ -235,7 +235,7 @@ public class TangrammComponents extends AppCompatActivity {
                 }
             });
         }else{
-            builder.setMessage("Ты прошел раздел \"Tangramm\"");
+            builder.setMessage("Вы прошли раздел \"Tangramm\"");
         }
         AlertDialog alert = builder.create();
         alert.show();
@@ -365,7 +365,7 @@ public class TangrammComponents extends AppCompatActivity {
             case R.id.action_help:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Справка")
-                        .setMessage("Перемести все цветные фигуры на места для них. Вращай фигуры двумя пальцами.")
+                        .setMessage("Переместите все цветные фигуры на места для них. Вращайте фигуры двумя пальцами.")
                         .setIcon(R.mipmap.ic_launcher_round)
                         .setCancelable(false)
                         .setNegativeButton("ОК",

@@ -40,8 +40,8 @@ public class FindSimilarActivity extends AppCompatActivity {
           fail=0;
           right=0;
           AlertDialog.Builder builder = new AlertDialog.Builder(FindSimilarActivity.this);
-          builder.setTitle("Ты проиграл")
-                  .setMessage("Попробуй еще!")
+          builder.setTitle("Вы проиграли")
+                  .setMessage("Попробуйте еще!")
                   .setIcon(R.mipmap.error)
                   .setCancelable(false)
                   .setNegativeButton("ОК",
@@ -58,7 +58,7 @@ public class FindSimilarActivity extends AppCompatActivity {
           fail=0;
           right=0;
           AlertDialog.Builder builder = new AlertDialog.Builder(FindSimilarActivity.this);
-          builder.setTitle("Ты победил")
+          builder.setTitle("Вы победили")
                   .setMessage("Уровень " + level + " пройден!")
                   .setIcon(R.drawable.human_button_touched)
                   .setCancelable(false)
@@ -83,7 +83,7 @@ public class FindSimilarActivity extends AppCompatActivity {
                   }
               });
           }else{
-              builder.setMessage("Ты прошел раздел \"Найди похожие\"");
+              builder.setMessage("Вы прошли раздел \"Найди похожие\"");
           }
           AlertDialog alert = builder.create();
           alert.show();

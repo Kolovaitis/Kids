@@ -328,7 +328,7 @@ try{                    view.setAlpha(newAlpha);}catch (Exception e){}
             case R.id.action_help:
                 AlertDialog.Builder builder = new AlertDialog.Builder(DrawActivity.this);
                 builder.setTitle("Справка")
-                        .setMessage("Раскрась левую часть экрана так, как раскрашена правая")
+                        .setMessage("Раскрасьте левую часть экрана так, как раскрашена правая")
                         .setIcon(R.mipmap.ic_launcher_round)
                         .setCancelable(false)
                         .setNegativeButton("ОК",
@@ -414,7 +414,7 @@ win();
     }
     public void win(){
         AlertDialog.Builder builder = new AlertDialog.Builder(DrawActivity.this);
-        builder.setTitle("Ты победил")
+        builder.setTitle("Вы победили")
                 .setMessage("Уровень " + (level+1) + " пройден!")
                 .setIcon(R.drawable.human_button_touched)
                 .setCancelable(false)
@@ -443,7 +443,7 @@ win();
                 }
             });
         }else{
-            builder.setMessage("Ты прошел раздел \"Раскрась по образцу\"");
+            builder.setMessage("Вы прошли раздел \"Раскрась по образцу\"");
         }
         AlertDialog alert = builder.create();
         alert.show();

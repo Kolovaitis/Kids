@@ -139,7 +139,7 @@ public class FindDifference extends AppCompatActivity {
 
     public void win(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Ты победил")
+        builder.setTitle("Вы победили")
                 .setMessage("Уровень " + Integer.toString(level + 1) + " пройден!")
                 .setIcon(R.drawable.human_button_touched)
                 .setCancelable(false)
@@ -169,7 +169,7 @@ public class FindDifference extends AppCompatActivity {
                 }
             });
         }else{
-            builder.setMessage("Ты прошел раздел \"Найди отличия\"");
+            builder.setMessage("Вы прошли раздел \"Найди отличия\"");
         }
         AlertDialog alert = builder.create();
         alert.show();
@@ -177,8 +177,8 @@ public class FindDifference extends AppCompatActivity {
 
     public void lose(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Ты проиграл")
-                .setMessage("Попробуй еще раз!")
+        builder.setTitle("Вы проиграли")
+                .setMessage("Попробуйте еще раз!")
                 .setIcon(R.drawable.human_button_touched)
                 .setCancelable(false)
                 .setNeutralButton("Заново", new DialogInterface.OnClickListener() {
@@ -341,7 +341,7 @@ public class FindDifference extends AppCompatActivity {
             case R.id.action_help:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Справка")
-                        .setMessage("Нажимай на отличающиеся части изображений. Найди все отличия.")
+                        .setMessage("Нажимайте на отличающиеся части изображений. Найдите все отличия.")
                         .setIcon(R.mipmap.ic_launcher_round)
                         .setCancelable(false)
                         .setNegativeButton("ОК",
